@@ -1,67 +1,44 @@
-<picture>
-    <source srcset="https://raw.githubusercontent.com/leptos-rs/leptos/main/docs/logos/Leptos_logo_Solid_White.svg" media="(prefers-color-scheme: dark)">
-    <img src="https://raw.githubusercontent.com/leptos-rs/leptos/main/docs/logos/Leptos_logo_RGB.svg" alt="Leptos Logo">
-</picture>
+Installed tools and toolchains
 
-# Leptos Starter Template
+sudo apt install rustc
 
-This is a template for use with the [Leptos](https://github.com/leptos-rs/leptos) web framework and the [cargo-leptos](https://github.com/akesson/cargo-leptos) tool.
+rustup toolchain install nightly --allow-downgrade
+rustup default nightly
 
-## Creating your template repo
+rustup target add wasm32-unknown-unknown
 
-If you don't have `cargo-leptos` installed you can install it with
+cargo install trunk cargo-leptos
 
-`cargo install cargo-leptos`
+failed to run custom build command for `openssl-sys v0.9.91`
+Package openssl was not found in the pkg-config search path.
+  Perhaps you should add the directory containing `openssl.pc'
+  to the PKG_CONFIG_PATH environment variable
+  No package 'openssl' found
+---->(sudo apt-get install libssl-dev)
 
-Then run
+The pkg-config command could not be found.
+  Most likely, you need to install a pkg-config package for your OS.
+  Try `apt install pkg-config`, or `yum install pkg-config`,
+  or `pkg install pkg-config`, or `apk add pkgconfig` depending on your distribution.
+---->(sudo apt install pkg-config)
 
-`cargo leptos new --git leptos-rs/start`
+re-run
+cargo install trunk cargo-leptos
 
-to generate a new project template.
+cargo install cargo-generate
 
-`cd {projectname}`
+Got the template from a git hub repository
+cargo leptos new --git https://github.com/leptos-rs/start
+give a project name
+cd {projectname}
+cargo leptos watch
 
-to go to your newly created project.
+SerDe
+cd {projectname} (inside the project directory)
+cargo add serde -F derive
 
-Of course, you should explore around the project structure, but the best place to start with your application code is in `src/app.rs`.
+TailwindCSS
+sudo apt install npm
+npm install -D tailwindcss
+npx tailwindcss -i ./input.css -o ./style/output.css --watch - errored
 
-## Running your project
-
-`cargo leptos watch`
-
-## Installing Additional Tools
-
-By default, `cargo-leptos` uses `nightly` Rust, `cargo-generate`, and `sass`. If you run into any trouble, you may need to install one or more of these tools.
-
-1. `rustup toolchain install nightly --allow-downgrade` - make sure you have Rust nightly
-2. `rustup target add wasm32-unknown-unknown` - add the ability to compile Rust to WebAssembly
-3. `cargo install cargo-generate` - install `cargo-generate` binary (should be installed automatically in future)
-4. `npm install -g sass` - install `dart-sass` (should be optional in future)
-
-## Executing a Server on a Remote Machine Without the Toolchain
-After running a `cargo leptos build --release` the minimum files needed are:
-
-1. The server binary located in `target/server/release`
-2. The `site` directory and all files within located in `target/site`
-
-Copy these files to your remote server. The directory structure should be:
-```text
-leptos_start
-site/
-```
-Set the following environment variables (updating for your project as needed):
-```sh
-export LEPTOS_OUTPUT_NAME="leptos_start"
-export LEPTOS_SITE_ROOT="site"
-export LEPTOS_SITE_PKG_DIR="pkg"
-export LEPTOS_SITE_ADDR="127.0.0.1:3000"
-export LEPTOS_RELOAD_PORT="3001"
-```
-Finally, run the server binary.
-
-## Notes about CSR and Trunk:
-Although it is not recommended, you can also run your project without server integration using the feature `csr` and `trunk serve`:
-
-`trunk serve --open --features csr`
-
-This may be useful for integrating external tools which require a static site, e.g. `tauri`.

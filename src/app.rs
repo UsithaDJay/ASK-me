@@ -2,10 +2,25 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 
+use crate::model::converastion::{Conversation, Message};
+
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
     // Provides context that manages stylesheets, titles, meta tags, etc.
     provide_meta_context(cx);
+
+    // signal that holds the current conversation
+    let (converastion, set_converastion) = create_signal(cx, Conversation::new());
+
+    // action that sends a new messege and updates the conversation
+    let send = create_action(cx, move |new_messege: &String| {
+        let user_messege = Message {
+            text: new_messege.clone(),
+            user: true,
+        };
+        set_conversation.update(move |c| {
+            c.messeges.push(user_messege);
+        });
 
     view! { cx,
         // injects a stylesheet into the document <head>
@@ -13,51 +28,9 @@ pub fn App(cx: Scope) -> impl IntoView {
         <Stylesheet id="leptos" href="/pkg/leptos_start.css"/>
 
         // sets the document title
-        <Title text="Welcome to Leptos"/>
-
-        // content for this welcome page
-        <Router>
-            <main>
-                <Routes>
-                    <Route path="" view=HomePage/>
-                    <Route path="/*any" view=NotFound/>
-                </Routes>
-            </main>
-        </Router>
+        <Title text="ASK-me"/>
+        <ChatArea converastion/>
+        <TypeArea send/>
     }
 }
 
-/// Renders the home page of your application.
-#[component]
-fn HomePage(cx: Scope) -> impl IntoView {
-    // Creates a reactive value to update the button
-    let (count, set_count) = create_signal(cx, 0);
-    let on_click = move |_| set_count.update(|count| *count += 1);
-
-    view! { cx,
-        <h1>"Welcome to Leptos!"</h1>
-        <button on:click=on_click>"Click Me: " {count}</button>
-    }
-}
-
-/// 404 - Not Found
-#[component]
-fn NotFound(cx: Scope) -> impl IntoView {
-    // set an HTTP status code 404
-    // this is feature gated because it can only be done during
-    // initial server-side rendering
-    // if you navigate to the 404 page subsequently, the status
-    // code will not be set because there is not a new HTTP request
-    // to the server
-    #[cfg(feature = "ssr")]
-    {
-        // this can be done inline because it's synchronous
-        // if it were async, we'd use a server function
-        let resp = expect_context::<leptos_actix::ResponseOptions>(cx);
-        resp.set_status(actix_web::http::StatusCode::NOT_FOUND);
-    }
-
-    view! { cx,
-        <h1>"Not Found"</h1>
-    }
-}
